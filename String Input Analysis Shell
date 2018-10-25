@@ -1,0 +1,87 @@
+import java.util.Scanner;
+import java.util.ArrayList;
+
+public class mainData {
+
+    public static void main (String[] args){
+
+        Scanner input = new Scanner(System.in);
+        System.out.println("Enter the string you want to analyze: ");
+        String inputString = input.next();
+        System.out.println("Enter the character to divide different data types (pulse ox, temperature, etc) ");
+        String probeSplitter = input.next();
+        System.out.println("Enter the character to divide /within/ different data types ");
+        String subSplitter = input.next();
+
+        StringAnalyzer firstAnalyzer = new StringAnalyzer(inputString, probeSplitter, subSplitter);
+
+
+    }
+
+
+}
+
+
+class StringAnalyzer{
+    private boolean flaggingData;
+    private String inputString;
+    private String probeSplitter;
+    private String subSplitter;
+    private ArrayList<String> flaggedData;
+    public StringAnalyzer(){
+        flaggingData=false;
+        inputString="";
+        probeSplitter="";
+        subSplitter="";
+        flaggedData = new ArrayList<String>();
+    }
+    public StringAnalyzer(String inputStr, String probeSpli, String subSpli){
+        inputString=inputStr;
+        probeSplitter=probeSpli;
+        subSplitter=subSpli;
+        flaggedData = new ArrayList<String>();
+    }
+    public void startParse(){
+        String [] theProbes = inputString.split(probeSplitter);
+        String BPData = theProbes[0];
+        String pulseOxData = theProbes[1];
+        String ECGData = theProbes[2];
+        String tempData = theProbes[3];
+
+        //go through the data and first, loop to see if anything urgent
+        //then go through and display one at a time for each data
+
+        parseBP(BPData, subSplitter);
+        parsePulseOx(pulseOxData, subSplitter);
+        parseECGData(ECGData, subSplitter);
+        parseTemp(tempData, subSplitter);
+    }
+    public  void parseBP(String BPData, String subSplitter){}
+    public  void parsePulseOx(String pulseOxData, String subSplitter){}
+    public  void parseECGData(String ECGData, String subSplitter){}
+    public  void parseTemp(String tempData, String subSplitter){
+        String [] stringTemps = tempData.split(subSplitter);
+        Double [] realTemps = new Double [stringTemps.length];
+        for (int i=0; i<stringTemps.length; i++) {
+            double tempNow = Double.parseDouble(stringTemps[i]);
+            if (tempNow>100||tempNow<90){
+                flagData("Temperature");
+                //Should also store time of last flagged data to compare so I can unflag eventually
+            }
+
+
+            if (flaggingData){
+                flaggedData.add("BADTemp#" + i + "#"+ tempNow);
+                //add other info to this as well
+            }
+
+            realTemps[i]=tempNow;
+            //Display the realTemps[i] somewhere, upon some interval
+        }
+    }
+    public void flagData (String dataType){
+        flaggingData=true;
+        //do something specific to the DataType, whether ECG or temp, here
+    }
+
+}
